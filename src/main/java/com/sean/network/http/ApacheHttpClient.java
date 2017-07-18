@@ -48,7 +48,7 @@ public class ApacheHttpClient {
     private final static Object syncLock = new Object();
     private String _authCode;
     private HttpRequestRetryHandler requestRetryHandler;
-    private ClientConfig config = ClientConfig.getInstance();//default
+    private ClientConfig config = ClientConfig.newBuilder().build();
 
     public ApacheHttpClient(String authCode, ClientConfig config) {
         this(config);
