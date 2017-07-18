@@ -278,131 +278,174 @@ public class ApacheHttpClient {
         return responseContent;
     }
 
-    public static class ClientConfig extends HashMap<String, Object> {
+    public static class ClientConfig {
 
-        public static final String SSL_VERSION = "ssl.version";
-        public static final String DEFAULT_SSL_VERSION = "TLS";
+        private String sslVersion;
+        private int maxRetryTimes;
+        private int readTimeout;
+        private int connectionRequestTimeout;
+        private int connectionTimeout;
+        private int socketTimeout;
+        private int connectionMaxTotal;
+        private int connectionMaxRoute;
+        private int connectionMaxPerRoute;
 
-        public static final String MAX_RETRY_TIMES = "max.retry.times";
-        public static final int DEFULT_MAX_RETRY_TIMES = 3;
-
-        public static final String READ_TIMEOUT = "read.timeout";
-        public static final int DEFAULT_READ_TIMEOUT = 30 * 1000;
-
-        public static final String CONNECTION_REQUEST_TIMEOUT = "connection.request.timeout";
-        public static final int DEFAULT_CONNECTION_REQUEST_TIMEOUT = 10 * 1000;
-
-        public static final String CONNECTION_TIMEOUT = "connection.timeout";
-        public static final int DEFAULT_CONNECTION_TIMEOUT = 5 * 1000;
-
-        public static final String SOCKET_TIMEOUT = "socket.timeout";
-        public static final int DEFAULT_SOCKET_TIMEOUT = 10 * 1000;
-
-        public static final String CONNECTION_MAX_TOTAL = "connection.max.total";
-        public static final int DEFAULT_CONNECTION_MAX_TOTAL = 200;
-
-        public static final String CONNECTION_MAX_ROUTE = "connection.max.route";
-        public static final int DEFAULT_CONNECTION_MAX_ROUTE = 100;
-
-        public static final String CONNECTION_MAX_PER_ROUTE = "connection.max.per.route";
-        public static final int DEFAULT_CONNECTION_MAX_PER_ROUTE = 40;
-
-
-        private static ClientConfig instance = new ClientConfig();
-
-        private ClientConfig() {
-            super(32);
-            this.put(SSL_VERSION, DEFAULT_SSL_VERSION);
-            this.put(MAX_RETRY_TIMES, DEFULT_MAX_RETRY_TIMES);
-            this.put(READ_TIMEOUT, DEFAULT_READ_TIMEOUT);
-            this.put(CONNECTION_REQUEST_TIMEOUT, DEFAULT_CONNECTION_REQUEST_TIMEOUT);
-            this.put(CONNECTION_TIMEOUT, DEFAULT_CONNECTION_TIMEOUT);
-            this.put(SOCKET_TIMEOUT, DEFAULT_SOCKET_TIMEOUT);
-            this.put(CONNECTION_MAX_TOTAL, DEFAULT_CONNECTION_MAX_TOTAL);
-            this.put(CONNECTION_MAX_ROUTE, DEFAULT_CONNECTION_MAX_ROUTE);
-            this.put(CONNECTION_MAX_PER_ROUTE, DEFAULT_CONNECTION_MAX_PER_ROUTE);
+        private ClientConfig(Builder builder) {
+            setSslVersion(builder.sslVersion);
+            setMaxRetryTimes(builder.maxRetryTimes);
+            setReadTimeout(builder.readTimeout);
+            setConnectionRequestTimeout(builder.connectionRequestTimeout);
+            setConnectionTimeout(builder.connectionTimeout);
+            setSocketTimeout(builder.socketTimeout);
+            setConnectionMaxTotal(builder.connectionMaxTotal);
+            setConnectionMaxRoute(builder.connectionMaxRoute);
+            setConnectionMaxPerRoute(builder.connectionMaxPerRoute);
         }
 
-        public static ClientConfig getInstance() {
-            return instance;
+        public static Builder newBuilder() {
+            return new Builder();
         }
 
-        public void setSSLVersion(String sslVer) {
-            this.put(SSL_VERSION, sslVer);
+        public String getSslVersion() {
+            return sslVersion;
+        }
+
+        public void setSslVersion(String sslVersion) {
+            this.sslVersion = sslVersion;
+        }
+
+        public int getMaxRetryTimes() {
+            return maxRetryTimes;
         }
 
         public void setMaxRetryTimes(int maxRetryTimes) {
-            this.put(MAX_RETRY_TIMES, maxRetryTimes);
+            this.maxRetryTimes = maxRetryTimes;
+        }
+
+        public int getReadTimeout() {
+            return readTimeout;
         }
 
         public void setReadTimeout(int readTimeout) {
-            this.put(READ_TIMEOUT, readTimeout);
+            this.readTimeout = readTimeout;
         }
 
-        public void setConnectionRequestTimeout(int timeout) {
-            this.put(CONNECTION_REQUEST_TIMEOUT, timeout);
+        public int getConnectionRequestTimeout() {
+            return connectionRequestTimeout;
+        }
+
+        public void setConnectionRequestTimeout(int connectionRequestTimeout) {
+            this.connectionRequestTimeout = connectionRequestTimeout;
+        }
+
+        public int getConnectionTimeout() {
+            return connectionTimeout;
         }
 
         public void setConnectionTimeout(int connectionTimeout) {
-            this.put(CONNECTION_TIMEOUT, connectionTimeout);
+            this.connectionTimeout = connectionTimeout;
+        }
+
+        public int getSocketTimeout() {
+            return socketTimeout;
         }
 
         public void setSocketTimeout(int socketTimeout) {
-            this.put(SOCKET_TIMEOUT, socketTimeout);
-        }
-
-        public String getSSLVersion() {
-            return (String) this.get(SSL_VERSION);
-        }
-
-        public Integer getMaxRetryTimes() {
-            return (Integer) this.get(MAX_RETRY_TIMES);
-        }
-
-        public Integer getReadTimeout() {
-            return (Integer) this.get(READ_TIMEOUT);
-        }
-
-        public Integer getConnectionRequestTimeout() {
-            return (Integer) this.get(CONNECTION_REQUEST_TIMEOUT);
-        }
-
-        public Integer getConnectionTimeout() {
-            return (Integer) this.get(CONNECTION_TIMEOUT);
-        }
-
-        public Integer getSocketTimeout() {
-            return (Integer) this.get(SOCKET_TIMEOUT);
-        }
-
-        public void setConnectionMaxTotal(int connectionMaxTotal) {
-            this.put(CONNECTION_MAX_TOTAL, connectionMaxTotal);
+            this.socketTimeout = socketTimeout;
         }
 
         public int getConnectionMaxTotal() {
-            return (Integer) this.get(CONNECTION_MAX_TOTAL);
+            return connectionMaxTotal;
         }
 
-        public void setConnectionMaxRoute(int connectionMaxRoute) {
-            this.put(CONNECTION_MAX_ROUTE, connectionMaxRoute);
+        public void setConnectionMaxTotal(int connectionMaxTotal) {
+            this.connectionMaxTotal = connectionMaxTotal;
         }
 
         public int getConnectionMaxRoute() {
-            return (Integer) this.get(CONNECTION_MAX_ROUTE);
+            return connectionMaxRoute;
         }
 
-        public void setConnectionMaxPerRoute(int connectionMaxPerRoute) {
-            this.put(CONNECTION_MAX_PER_ROUTE, connectionMaxPerRoute);
+        public void setConnectionMaxRoute(int connectionMaxRoute) {
+            this.connectionMaxRoute = connectionMaxRoute;
         }
 
         public int getConnectionMaxPerRoute() {
-            return (Integer) this.get(CONNECTION_MAX_PER_ROUTE);
+            return connectionMaxPerRoute;
         }
 
+        public void setConnectionMaxPerRoute(int connectionMaxPerRoute) {
+            this.connectionMaxPerRoute = connectionMaxPerRoute;
+        }
+
+        public static final class Builder {
+
+            private String sslVersion = "TLS";
+            private int maxRetryTimes = 3;
+            private int readTimeout = 30 * 1000;
+            private int connectionRequestTimeout = 10 * 1000;
+            private int connectionTimeout = 5 * 1000;
+            private int socketTimeout = 10 * 1000;
+            private int connectionMaxTotal = 200;
+            private int connectionMaxRoute = 100;
+            private int connectionMaxPerRoute = 40;
+
+            private Builder() {
+            }
+
+            public Builder sslVersion(String val) {
+                sslVersion = val;
+                return this;
+            }
+
+            public Builder maxRetryTimes(int val) {
+                maxRetryTimes = val;
+                return this;
+            }
+
+            public Builder readTimeout(int val) {
+                readTimeout = val;
+                return this;
+            }
+
+            public Builder connectionRequestTimeout(int val) {
+                connectionRequestTimeout = val;
+                return this;
+            }
+
+            public Builder connectionTimeout(int val) {
+                connectionTimeout = val;
+                return this;
+            }
+
+            public Builder socketTimeout(int val) {
+                socketTimeout = val;
+                return this;
+            }
+
+            public Builder connectionMaxTotal(int val) {
+                connectionMaxTotal = val;
+                return this;
+            }
+
+            public Builder connectionMaxRoute(int val) {
+                connectionMaxRoute = val;
+                return this;
+            }
+
+            public Builder connectionMaxPerRoute(int val) {
+                connectionMaxPerRoute = val;
+                return this;
+            }
+
+            public ClientConfig build() {
+                return new ClientConfig(this);
+            }
+        }
     }
 
     public static void main(String[] args) {
-        ClientConfig config = ClientConfig.getInstance();
+        ClientConfig config = ClientConfig.newBuilder().connectionMaxPerRoute(100).build();
         ApacheHttpClient httpClient = new ApacheHttpClient(config);
         String url = "http://localhost:8080/http/";
         Map<String, String> params = new HashMap<String, String>();
