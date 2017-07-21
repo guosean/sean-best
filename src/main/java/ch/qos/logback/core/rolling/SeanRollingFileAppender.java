@@ -17,7 +17,7 @@ public class SeanRollingFileAppender<E> extends RollingFileAppender<E> {
     private void checkRollover() {
         TriggeringPolicy var1 = this.triggeringPolicy;
         synchronized(this.triggeringPolicy) {
-            if(this.triggeringPolicy.isTriggeringEvent(this.currentlyActiveFile, (Object)null)) {
+            if(this.triggeringPolicy.isTriggeringEvent(this.currentlyActiveFile, null)) {
                 this.rollover();
             } else {
                 if(this.triggeringPolicy instanceof TimeBasedRollingPolicy && !this.currentlyActiveFile.exists()) {
