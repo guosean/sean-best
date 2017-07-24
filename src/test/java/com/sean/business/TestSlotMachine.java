@@ -45,14 +45,12 @@ public class TestSlotMachine {
     @Test
     public void testDrawWithFilter(){
         SeanAward award = slotMachine.drawWithFilter(new Predicate<SeanAward>() {
-            @Override
             public boolean apply(SeanAward seanAward) {
                 return true;
             }
         });
         Assert.assertNotNull(award);
         award = slotMachine.drawWithFilter(new Predicate<SeanAward>() {
-            @Override
             public boolean apply(SeanAward seanAward) {
                 return false;
             }
@@ -123,12 +121,10 @@ public class TestSlotMachine {
             this.code = code;
         }
 
-        @Override
         public int getWeight() {
             return weight;
         }
 
-        @Override
         public String getCode() {
             return code;
         }

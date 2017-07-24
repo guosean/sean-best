@@ -1,6 +1,11 @@
 package com.sean.util;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.core.JsonFactory;
+import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -12,6 +17,43 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class JsonMapper {
+
+    private static ObjectMapper mapper;
+
+    private JsonMapper(JsonInclude.Include include){
+        mapper = new ObjectMapper();
+        mapper.setSerializationInclusion(include);
+        mapper.configure(JsonParser.Feature.IGNORE_UNDEFINED,true);
+        mapper.configure(JsonGenerator.Feature.IGNORE_UNKNOWN,true);
+    }
+
+    public static JsonMapper buildNormal(){
+        return new JsonMapper(JsonInclude.Include.ALWAYS);
+    }
+
+    public static JsonMapper buildNonNull(){
+        return new JsonMapper(JsonInclude.Include.NON_NULL);
+    }
+
+    public <T> T fromJson(String json,Class<T> t) {
+        T result = null;
+        try {
+            result =  mapper.readValue(json,t);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return result;
+    }
+
+    public String toJson(Object obj){
+        try {
+            return mapper.writeValueAsString(obj);
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+        }
+        return "{}";
+    }
+    
 
     public static void main(String[] args) throws IOException {
         ObjectMapper mapper = new ObjectMapper();
@@ -36,6 +78,38 @@ public class JsonMapper {
         mapper.setSerializationInclusion(JsonInclude.Include.ALWAYS);
         personList1 = mapper.readValue(result,javaType);
         System.out.println(personList1);
+
+        AnnotationBean ab = new AnnotationBean();
+        ab.setAppName("sean");
+        ab.setAppCode("1111");
+        result = mapper.writeValueAsString(ab);
+        System.out.println(ab);
+        ab = mapper.readValue(result,AnnotationBean.class);
+        ab.setAppName(ab.getAppName()+"--te");
+        System.out.println(ab.getAppName());
+    }
+
+    static class AnnotationBean{
+        @JsonProperty("app_name")
+        private String appName;
+
+        private String appCode;
+
+        public String getAppName() {
+            return appName;
+        }
+
+        public void setAppName(String appName) {
+            this.appName = appName;
+        }
+
+        public String getAppCode() {
+            return appCode;
+        }
+
+        public void setAppCode(String appCode) {
+            this.appCode = appCode;
+        }
     }
 
     static class Person {

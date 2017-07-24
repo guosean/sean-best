@@ -10,7 +10,7 @@
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel target="1.7">
-      <module name="sean-best" target="1.7" />
+      <module name="sean-best" target="1.6" />
     </bytecodeTargetLevel>
   </component>
 </project>

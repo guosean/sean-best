@@ -1,5 +1,8 @@
 package com.sean.network.http;
 
+import com.google.common.base.Preconditions;
+import com.sean.util.JsonMapper;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.http.*;
 import org.apache.http.client.HttpRequestRetryHandler;
 import org.apache.http.client.config.RequestConfig;
@@ -32,7 +35,6 @@ import java.io.InterruptedIOException;
 import java.io.UnsupportedEncodingException;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -190,7 +192,9 @@ public class ApacheHttpClient {
         String result = null;
         try {
             HttpPost httpPost = new HttpPost(url);
-            httpPost.setHeader(HttpHeaders.AUTHORIZATION, _authCode);
+            if(StringUtils.isNoneBlank(_authCode)){
+                httpPost.setHeader(HttpHeaders.AUTHORIZATION, _authCode);
+            }
             StringEntity params = new StringEntity(content);
             httpPost.setEntity(params);
             result = sendRequest(url, httpPost);
@@ -217,6 +221,21 @@ public class ApacheHttpClient {
         }
 
         return result;
+    }
+
+    public <T,R> R sendPost(String url, T input, Class<R> responseType) {
+        Preconditions.checkArgument(StringUtils.isNotBlank(url),"url cannot be blank");
+        Preconditions.checkNotNull(input,"input cannot be null");
+        Preconditions.checkNotNull(responseType,"response type cannot be null");
+
+        String params = mapper.toJson(input);
+        String response = sendPost(url,params);
+
+        if(StringUtils.isBlank(response)){
+            return null;
+        }
+
+        return mapper.fromJson(response,responseType);
     }
 
     public String sendPut(String url, String content) {
@@ -278,184 +297,6 @@ public class ApacheHttpClient {
         return responseContent;
     }
 
-    public static class ClientConfig {
-
-        private String sslVersion;
-        private int maxRetryTimes;
-        private int readTimeout;
-        private int connectionRequestTimeout;
-        private int connectionTimeout;
-        private int socketTimeout;
-        private int connectionMaxTotal;
-        private int connectionMaxRoute;
-        private int connectionMaxPerRoute;
-
-        private ClientConfig(Builder builder) {
-            setSslVersion(builder.sslVersion);
-            setMaxRetryTimes(builder.maxRetryTimes);
-            setReadTimeout(builder.readTimeout);
-            setConnectionRequestTimeout(builder.connectionRequestTimeout);
-            setConnectionTimeout(builder.connectionTimeout);
-            setSocketTimeout(builder.socketTimeout);
-            setConnectionMaxTotal(builder.connectionMaxTotal);
-            setConnectionMaxRoute(builder.connectionMaxRoute);
-            setConnectionMaxPerRoute(builder.connectionMaxPerRoute);
-        }
-
-        public static Builder newBuilder() {
-            return new Builder();
-        }
-
-        public String getSslVersion() {
-            return sslVersion;
-        }
-
-        public void setSslVersion(String sslVersion) {
-            this.sslVersion = sslVersion;
-        }
-
-        public int getMaxRetryTimes() {
-            return maxRetryTimes;
-        }
-
-        public void setMaxRetryTimes(int maxRetryTimes) {
-            this.maxRetryTimes = maxRetryTimes;
-        }
-
-        public int getReadTimeout() {
-            return readTimeout;
-        }
-
-        public void setReadTimeout(int readTimeout) {
-            this.readTimeout = readTimeout;
-        }
-
-        public int getConnectionRequestTimeout() {
-            return connectionRequestTimeout;
-        }
-
-        public void setConnectionRequestTimeout(int connectionRequestTimeout) {
-            this.connectionRequestTimeout = connectionRequestTimeout;
-        }
-
-        public int getConnectionTimeout() {
-            return connectionTimeout;
-        }
-
-        public void setConnectionTimeout(int connectionTimeout) {
-            this.connectionTimeout = connectionTimeout;
-        }
-
-        public int getSocketTimeout() {
-            return socketTimeout;
-        }
-
-        public void setSocketTimeout(int socketTimeout) {
-            this.socketTimeout = socketTimeout;
-        }
-
-        public int getConnectionMaxTotal() {
-            return connectionMaxTotal;
-        }
-
-        public void setConnectionMaxTotal(int connectionMaxTotal) {
-            this.connectionMaxTotal = connectionMaxTotal;
-        }
-
-        public int getConnectionMaxRoute() {
-            return connectionMaxRoute;
-        }
-
-        public void setConnectionMaxRoute(int connectionMaxRoute) {
-            this.connectionMaxRoute = connectionMaxRoute;
-        }
-
-        public int getConnectionMaxPerRoute() {
-            return connectionMaxPerRoute;
-        }
-
-        public void setConnectionMaxPerRoute(int connectionMaxPerRoute) {
-            this.connectionMaxPerRoute = connectionMaxPerRoute;
-        }
-
-        public static final class Builder {
-
-            private String sslVersion = "TLS";
-            private int maxRetryTimes = 3;
-            private int readTimeout = 30 * 1000;
-            private int connectionRequestTimeout = 10 * 1000;
-            private int connectionTimeout = 5 * 1000;
-            private int socketTimeout = 10 * 1000;
-            private int connectionMaxTotal = 200;
-            private int connectionMaxRoute = 100;
-            private int connectionMaxPerRoute = 40;
-
-            private Builder() {
-            }
-
-            public Builder sslVersion(String val) {
-                sslVersion = val;
-                return this;
-            }
-
-            public Builder maxRetryTimes(int val) {
-                maxRetryTimes = val;
-                return this;
-            }
-
-            public Builder readTimeout(int val) {
-                readTimeout = val;
-                return this;
-            }
-
-            public Builder connectionRequestTimeout(int val) {
-                connectionRequestTimeout = val;
-                return this;
-            }
-
-            public Builder connectionTimeout(int val) {
-                connectionTimeout = val;
-                return this;
-            }
-
-            public Builder socketTimeout(int val) {
-                socketTimeout = val;
-                return this;
-            }
-
-            public Builder connectionMaxTotal(int val) {
-                connectionMaxTotal = val;
-                return this;
-            }
-
-            public Builder connectionMaxRoute(int val) {
-                connectionMaxRoute = val;
-                return this;
-            }
-
-            public Builder connectionMaxPerRoute(int val) {
-                connectionMaxPerRoute = val;
-                return this;
-            }
-
-            public ClientConfig build() {
-                return new ClientConfig(this);
-            }
-        }
-    }
-
-    public static void main(String[] args) {
-        ClientConfig config = ClientConfig.newBuilder().connectionMaxPerRoute(100).build();
-        ApacheHttpClient httpClient = new ApacheHttpClient(config);
-        String url = "http://localhost:8080/http/";
-        Map<String, String> params = new HashMap<String, String>();
-        params.put("name", "sean");
-        String response = httpClient.sendPost(url, params);
-        System.out.println(response);
-        String jsonParam = "{\"title\":\"title\",\"token\":\"token\"}";
-        String result = httpClient.sendPost("http://localhost:8080/jpush/withSdk",jsonParam);
-        System.out.println(result);
-
-    }
+    static JsonMapper mapper = JsonMapper.buildNormal();
 
 }

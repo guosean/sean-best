@@ -1,6 +1,7 @@
 package com.sean.business;
 
 import com.google.common.base.Function;
+import com.google.common.base.MoreObjects;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Predicate;
 import com.google.common.collect.*;
@@ -185,7 +186,8 @@ public class SlotMachine<T extends SlotMachine.IAward> {
         }
 
         public String toString() {
-            return "SlotAward[" + getCode() + "," + getWeight() + "，<" + getStart() + "," + getEnd() + ">]";
+
+            return MoreObjects.toStringHelper(SlotAward.class).add("weight",getWeight()).add("code",getCode()).toString();
         }
 
     }
